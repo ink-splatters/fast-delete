@@ -2,6 +2,7 @@
 name = "fdel"
 version = "0.2.0"
 edition = "2024"
+license-file = "LICENSE"
 
 [dependencies]
 anyhow = "1.0.104"
