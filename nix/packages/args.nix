@@ -24,7 +24,7 @@ top @ {lib, ...}: {
     # CFLAGS = "-O3 -pipe";
     # CXXFLAGS = "-O3 -pipe";
     # LDFLAGS = "-fuse-ld=lld";
-    # mkFlagsNative = flags: "${flags} -mcpu=native";
+    # mkFlagsNative = flags: "${flags} -mcpu=${top.config.native}";
 
     mkCommonArgs = args @ {flags, ...}:
       {
@@ -59,7 +59,7 @@ top @ {lib, ...}: {
         type = lib.types.attrs;
 
         default = mkCommonArgs {
-          flags = flags ++ ["target-cpu=native"];
+          flags = flags ++ ["target-cpu=${top.config.native}"];
           NIX_ENFORCE_NO_NATIVE = 0;
 
           # CFLAGS = mkFlagsNative CFLAGS;
