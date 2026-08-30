@@ -2,7 +2,7 @@
 name = "fdel"
 version = "0.2.1"
 edition = "2024"
-license-file = "LICENSE"
+license = "MIT"
 
 [dependencies]
 anyhow = "1.0.104"
