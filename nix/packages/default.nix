@@ -18,6 +18,7 @@
       fast-delete-native = craneLib.buildPackage (commonArgsNative
         // {
           cargoArtifacts = cargoArtifactsNative;
+          pnameSuffix = "-native";
         });
     };
   };

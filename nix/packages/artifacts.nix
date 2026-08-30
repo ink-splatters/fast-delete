@@ -7,7 +7,7 @@
         type = lib.types.package;
         default = craneLib.buildDepsOnly (commonArgs
           // {
-            pname = "fast-delete";
+            pname = "fdel";
             # Include dev dependencies for clippy offline mode
             cargoCheckExtraArgs = "--all-targets --all-features";
           });
@@ -16,7 +16,7 @@
         type = lib.types.package;
         default = craneLib.buildDepsOnly (commonArgsNative
           // {
-            pname = "fast-delete-native";
+            pname = "fdel-native";
           });
       };
     };
