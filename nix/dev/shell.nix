@@ -1,11 +1,7 @@
 {
-  perSystem = {
-    config,
-    inputs',
-    ...
-  }: let
+  perSystem = {config, ...}: let
     inherit (config) pre-commit craneLib;
-    inherit (inputs'.fenix.packages.complete) rust-analyzer rust-src;
+    inherit (config.fenix.packages.complete) rust-analyzer rust-src;
   in {
     devShells.default = craneLib.devShell ({
         packages =
