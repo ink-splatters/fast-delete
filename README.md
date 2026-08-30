@@ -8,14 +8,27 @@ Parallel _file_ deletion using `unlinkat()` with directory fd caching.
 cargo build --release
 ```
 
+### With nix
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' build .#fast-delete-native
+./result/bin/fdel --help
+```
+
+Checks:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' flake check
+```
+
 ## Usage
 
 ```bash
 # From fd
-fd -t f . /path | ./target/release/fdel --stdin
+fd -t f . /path | fdel --stdin
 
 # Recursive
-./target/release/fdel /path/to/dir
+fdel /path/to/dir
 ```
 
 ## Options
@@ -29,9 +42,9 @@ fd -t f . /path | ./target/release/fdel --stdin
 ## How it works
 
 1. Groups files by parent directory
-2. Opens each directory once with `open(dir, O_DIRECTORY)`
-3. Deletes files with `unlinkat(dirfd, filename, 0)`
-4. Thread-local buffers (zero allocations per file)
+1. Opens each directory once with `open(dir, O_DIRECTORY)`
+1. Deletes files with `unlinkat(dirfd, filename, 0)`
+1. Thread-local buffers (zero allocations per file)
 
 This avoids repeated path resolution and reduces syscalls.
 
