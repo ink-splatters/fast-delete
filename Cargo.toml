@@ -10,9 +10,6 @@ clap = { version = "4.6.5", features = ["derive"] }
 libc = "0.2.189"
 rayon = "1.12.0"
 
-[target.'cfg(all(target_arch = "aarch64", target_vendor = "apple"))'.dependencies]
-sysctl = "0.7.1"
-
 [profile.release]
 lto = "fat"
 codegen-units = 1

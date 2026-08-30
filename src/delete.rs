@@ -5,8 +5,8 @@ use std::fs;
 use std::io;
 use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 
 thread_local! {
     static FILENAME_BUF: RefCell<Vec<u8>> = RefCell::new(Vec::with_capacity(256));
@@ -95,4 +95,31 @@ pub fn delete_with_dirfd(
             libc::close(dirfd);
         }
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::group_by_parent;
+    use std::path::{Path, PathBuf};
+
+    #[test]
+    fn groups_files_by_parent_directory() {
+        let paths = vec![
+            PathBuf::from("/tmp/first/a"),
+            PathBuf::from("/tmp/second/b"),
+            PathBuf::from("/tmp/first/c"),
+        ];
+
+        let groups = group_by_parent(paths.clone());
+
+        assert_eq!(groups.len(), 2);
+        assert_eq!(
+            groups.get(Path::new("/tmp/first")),
+            Some(&vec![paths[0].clone(), paths[2].clone()])
+        );
+        assert_eq!(
+            groups.get(Path::new("/tmp/second")),
+            Some(&vec![paths[1].clone()])
+        );
+    }
 }

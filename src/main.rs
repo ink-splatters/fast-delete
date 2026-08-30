@@ -6,8 +6,8 @@ use clap::Parser;
 use std::fs;
 use std::io::{self, BufRead, BufReader};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::Instant;
 
 #[derive(Parser)]
@@ -30,14 +30,26 @@ struct Args {
 fn detect_optimal_threads() -> usize {
     #[cfg(all(target_arch = "aarch64", target_vendor = "apple"))]
     {
-        use sysctl::Sysctl;
+        let mut performance_cores: libc::c_int = 0;
+        let mut value_size = std::mem::size_of_val(&performance_cores);
 
-        if let Ok(ctl) = sysctl::Ctl::new("hw.perflevel0.physicalcpu") {
-            if let Ok(value) = ctl.value() {
-                if let sysctl::CtlValue::Int(pcores) = value {
-                    return pcores as usize;
-                }
-            }
+        // SAFETY: The name is NUL-terminated, `performance_cores` is writable for
+        // `value_size` bytes, and null new-value arguments make this a read.
+        let status = unsafe {
+            libc::sysctlbyname(
+                c"hw.perflevel0.physicalcpu".as_ptr(),
+                std::ptr::from_mut(&mut performance_cores).cast(),
+                &mut value_size,
+                std::ptr::null_mut(),
+                0,
+            )
+        };
+
+        if status == 0
+            && value_size == std::mem::size_of_val(&performance_cores)
+            && performance_cores > 0
+        {
+            return performance_cores as usize;
         }
     }
 
@@ -114,9 +126,8 @@ fn collect_stdin() -> Result<Vec<PathBuf>> {
     let reader = BufReader::with_capacity(1024 * 1024, stdin.lock());
     Ok(reader
         .lines()
-        .filter_map(|l| l.ok())
-        .map(PathBuf::from)
-        .collect())
+        .map(|line| line.map(PathBuf::from))
+        .collect::<io::Result<_>>()?)
 }
 
 fn collect_dir(dir: &Path) -> Result<Vec<PathBuf>> {
