@@ -1,5 +1,9 @@
 {
-  perSystem = {config, ...}: let
+  perSystem = {
+    config,
+    pkgs,
+    ...
+  }: let
     inherit (config) pre-commit craneLib;
     inherit (config.fenix.packages.complete) rust-analyzer rust-src;
   in {
@@ -7,7 +11,7 @@
         packages =
           pre-commit.settings.enabledPackages
           ++ [
-            # pkgs.zizmor
+            pkgs.zizmor
             rust-analyzer
             rust-src
           ];
