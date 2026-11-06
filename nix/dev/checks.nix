@@ -15,6 +15,10 @@ top @ {inputs, ...}: {
         inherit (inputs) advisory-db;
         pname = crate.name;
         inherit (crate) version;
+        # crane's default is the old `--ignore yanked`, which cargo-audit now
+        # parses as `--ignore=yanked` (an advisory ID). Yanked checks need the
+        # crates.io index, which is unavailable in the Nix sandbox.
+        cargoAuditExtraArgs = "--no-yanked";
       };
 
       cargo-clippy = craneLib.cargoClippy (

@@ -1,4 +1,10 @@
-top @ {lib, ...}: {
+top @ {lib, ...}: let
+  inherit
+    (lib)
+    concatStringsSep
+    optionals
+    ;
+in {
   perSystem = {
     config,
     pkgs,
@@ -12,7 +18,7 @@ top @ {lib, ...}: {
       libcxx
       ;
 
-    mkFlags = flags: lib.concatStringsSep " " (map (x: "-C ${x}") flags);
+    mkFlags = flags: concatStringsSep " " (map (x: "-C ${x}") flags);
 
     flags = [
       "linker=${clang}/bin/cc"
@@ -26,7 +32,7 @@ top @ {lib, ...}: {
         enableParallelBuilding = true;
         RUSTFLAGS = mkFlags flags;
 
-        buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [
+        buildInputs = optionals stdenv.hostPlatform.isDarwin [
           libcxx
         ];
 
@@ -43,7 +49,7 @@ top @ {lib, ...}: {
       commonArgs = lib.mkOption {
         type = lib.types.attrs;
         default = mkCommonArgs {
-          flags = flags ++ ["target-cpu=${top.config.native}"];
+          flags = flags ++ optionals stdenv.hostPlatform.isDarwin ["target-cpu=${top.config.native}"];
         };
       };
 
