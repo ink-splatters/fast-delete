@@ -51,8 +51,6 @@
         };
       };
       config = {
-        native = "apple-m1";
-
         inherit systems;
 
         partitionedAttrs = {

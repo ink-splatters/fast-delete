@@ -3,6 +3,6 @@
   # -mcpu=...
   options.native = lib.mkOption {
     type = lib.types.str;
-    default = "native";
+    default = "apple-m1";
   };
 }

@@ -28,28 +28,30 @@ top @ {lib, ...}: {
 
         buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [
           libcxx
-          pkgs.apple-sdk_15
         ];
 
         nativeBuildInputs = [
           clang
           bintools
         ];
+
+        NIX_ENFORCE_NO_NATIVE = 0;
       }
       // (builtins.removeAttrs args ["flags"]);
   in {
     options = {
       commonArgs = lib.mkOption {
         type = lib.types.attrs;
-        default = mkCommonArgs {inherit flags;};
+        default = mkCommonArgs {
+          flags = flags ++ ["target-cpu=${top.config.native}"];
+        };
       };
 
       commonArgsNative = lib.mkOption {
         type = lib.types.attrs;
 
         default = mkCommonArgs {
-          flags = flags ++ ["target-cpu=${top.config.native}"];
-          NIX_ENFORCE_NO_NATIVE = 0;
+          flags = flags ++ ["target-cpu=native"];
         };
       };
     };
